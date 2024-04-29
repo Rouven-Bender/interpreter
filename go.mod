@@ -1,3 +1,3 @@
-module git.local/monkey-interpreter
+module inter
 
 go 1.21.9
