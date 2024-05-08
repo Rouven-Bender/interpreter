@@ -14,14 +14,17 @@ const (
 	IDENT = "IDENT"
 	INT   = "INT"
 	//Operators
-	ASSIGN      = "="
-	PLUS        = "+"
-	MINUS       = "-"
-	EXCLEMARK   = "!"
-	FORWSLASH   = "/"
-	STAR        = "*"
+	ASSIGN    = "="
+	PLUS      = "+"
+	MINUS     = "-"
+	EXCLEMARK = "!"
+	FORWSLASH = "/"
+	STAR      = "*"
+	//Comperators
 	LESSTHEN    = "<"
 	GREATERTHEN = ">"
+	EQUAL       = "=="
+	NEQUAL      = "!="
 	//Delimiters
 	COMMA     = ","
 	SEMICOLON = ";"
