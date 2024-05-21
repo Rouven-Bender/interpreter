@@ -194,3 +194,28 @@ func (p *Parser) parsePrefixExpression() ast.Expression {
 	expression.Right = p.parseExpression(PREFIX)
 	return expression
 }
+
+var precedence = map[token.TokenType]int{
+	token.EQUAL:       EQUALS,
+	token.NEQUAL:      EQUALS,
+	token.LESSTHEN:    LESSGREATER,
+	token.GREATERTHEN: LESSGREATER,
+	token.PLUS:        SUM,
+	token.MINUS:       SUM,
+	token.FORWSLASH:   PRODUCT,
+	token.STAR:        PRODUCT,
+}
+
+func (p *Parser) peekPrecedence() int {
+	if p, ok := precedence[p.peekToken.Type]; ok {
+		return p
+	}
+	return LOWEST
+}
+
+func (p *Parser) curPrecedence() int {
+	if p, ok := precedence[p.curToken.Type]; ok {
+		return p
+	}
+	return LOWEST
+}
