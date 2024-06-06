@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestEvalIntegerA(t *testing.T) {
+func TestEvalInteger(t *testing.T) {
 	tests := []struct {
 		input    string
 		expected int64
@@ -16,6 +16,10 @@ func TestEvalIntegerA(t *testing.T) {
 		{"10", 10},
 		{"-5", -5},
 		{"-10", -10},
+		{"5 + 5 + 5 + 5 - 10", 10},
+		{"2 * 2 * 2 * 2 * 2", 32},
+		{"-50 + 100 + -50", 0},
+		{"50 / 2 * 2 + 10", 60},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
