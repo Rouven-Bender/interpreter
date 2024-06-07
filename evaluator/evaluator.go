@@ -1,14 +1,17 @@
 package evaluator
 
 import (
+	"fmt"
 	"inter/ast"
 	"inter/object"
 )
 
 var (
-	NULL  = &object.Null{}
-	TRUE  = &object.Boolean{Value: true}
-	FALSE = &object.Boolean{Value: false}
+	NULL      = &object.Null{}
+	TRUE      = &object.Boolean{Value: true}
+	FALSE     = &object.Boolean{Value: false}
+	UNKNOWNOP = "unknown operator: "
+	TYPEMISSM = "type mismatch: "
 )
 
 func Eval(node ast.Node) object.Object {
@@ -82,7 +85,7 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 	case "-":
 		return evalMinusPrefixOperatorExpression(right)
 	default:
-		return NULL
+		return newError(UNKNOWNOP+"%s%s", operator, right.Type())
 	}
 }
 
@@ -101,7 +104,7 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 
 func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	if right.Type() != object.INTEGER_OBJ {
-		return NULL
+		return newError(UNKNOWNOP+"-%s", right.Type())
 	}
 	value := right.(*object.Integer).Value
 	return &object.Integer{Value: -value}
@@ -118,8 +121,10 @@ func evalInfixExpression(
 		return nativeBoolToBooleanObject(left == right)
 	case operator == "!=":
 		return nativeBoolToBooleanObject(left != right)
+	case left.Type() != right.Type():
+		return newError(TYPEMISSM+"%s %s %s", left.Type(), operator, right.Type())
 	default:
-		return NULL
+		return newError(UNKNOWNOP+"%s %s %s", left.Type(), operator, right.Type())
 	}
 }
 
@@ -148,7 +153,8 @@ func evalIntegerInfixExpression(
 	case "!=":
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	default:
-		return NULL
+		return newError(UNKNOWNOP+"%s %s %s",
+			left.Type(), operator, right.Type())
 	}
 }
 
@@ -174,4 +180,8 @@ func isTruthy(obj object.Object) bool {
 	default:
 		return true
 	}
+}
+
+func newError(format string, a ...interface{}) *object.Error {
+	return &object.Error{Message: fmt.Sprintf(format, a...)}
 }
