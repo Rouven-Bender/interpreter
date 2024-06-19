@@ -252,9 +252,11 @@ func evalIdentifier(
 ) object.Object {
 	if val, ok := env.Get(node.Value); ok {
 		return val
-	} else {
-		return newError("identifier not found: " + node.Value)
 	}
+	if builtin, ok := builtins[node.Value]; ok {
+		return builtin
+	}
+	return newError("identifier not found: " + node.Value)
 }
 
 func evalExpressions(
@@ -274,13 +276,16 @@ func evalExpressions(
 }
 
 func applyFunction(fn object.Object, args []object.Object) object.Object {
-	function, ok := fn.(*object.Function)
-	if !ok {
+	switch fn := fn.(type) {
+	case *object.Function:
+		extentedEnv := extendFunctionEnv(fn, args)
+		evaluated := Eval(fn.Body, extentedEnv)
+		return unwrapReturnValue(evaluated)
+	case *object.Builtin:
+		return fn.Fn(args...)
+	default:
 		return newError("not a function: %s", fn.Type())
 	}
-	extentedEnv := extendFunctionEnv(function, args)
-	evaluated := Eval(function.Body, extentedEnv)
-	return unwrapReturnValue(evaluated)
 }
 
 func extendFunctionEnv(
