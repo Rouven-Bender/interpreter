@@ -299,6 +299,22 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`len("hello world")`, 11},
 		{`len(1)`, "argument to `len` not supported, got INTEGER"},
 		{`len("one","two")`, "wrong number of arguments. got=2, want=1"},
+		{
+			`let map = fn(arr, f) {
+				let iter = fn(arr, accumulated) {
+					if (len(arr) == 0) {
+						accumulated
+					} else {
+						iter(rest(arr), push(accumulated, f(first(arr))));
+					}
+				};
+				iter(arr, []);
+			};
+			let a = [1, 2, 3, 4];
+			let double = fn(x) { x * 2};
+			map(a, double);`,
+			object.Array{Elements: []object.Object{&object.Integer{Value: 2}, &object.Integer{Value: 4}, &object.Integer{Value: 6}, &object.Integer{Value: 8}}},
+		},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
