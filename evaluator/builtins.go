@@ -1,6 +1,9 @@
 package evaluator
 
-import "inter/object"
+import (
+	"fmt"
+	"inter/object"
+)
 
 var builtins = map[string]*object.Builtin{
 	"len": {
@@ -87,6 +90,14 @@ var builtins = map[string]*object.Builtin{
 			newElements := make([]object.Object, length+1)
 			copy(newElements, arr.Elements)
 			return &object.Array{Elements: newElements}
+		},
+	},
+	"puts": {
+		Fn: func(args ...object.Object) object.Object {
+			for _, arg := range args {
+				fmt.Println(arg.Inspect())
+			}
+			return NULL
 		},
 	},
 }
